@@ -1,30 +1,6 @@
 const bing_api_endpoint = "https://api.bing.microsoft.com/v7.0/images/search";
 const bing_api_key = BING_API_KEY;
 
-function displaySuggestions(queryExpansions) {
-  const suggestions = document.querySelector(".suggestions ul");
-  suggestions.innerHTML = "";
-  queryExpansions.forEach(element => {
-      const li = document.createElement("li");
-      li.textContent = element.displayText;
-      li.onclick = () => {
-          document.querySelector(".search input").value = element.displayText;
-          runSearch();
-      };
-      suggestions.appendChild(li);
-  });
-}
-
-function displayImgOnBoard(image) {
-  const board = document.getElementById("board");
-  const div = document.createElement("div");
-  div.className = "savedImage";
-  const img = document.createElement("img");
-  img.src = image;
-  div.appendChild(img);
-  board.appendChild(div);
-}
-
 function runSearch() {
 
   // TODO: Clear the results pane before you run a new search
@@ -80,7 +56,18 @@ function runSearch() {
       const images = response.value;
       const queryExpansions = response.queryExpansions;
 
-      displaySuggestions(queryExpansions);
+      // display suggestions (keywords)
+      const suggestions = document.querySelector(".suggestions ul");
+      suggestions.innerHTML = "";
+      queryExpansions.forEach(element => {
+          const li = document.createElement("li");
+          li.textContent = element.displayText;
+          li.onclick = () => {
+              document.querySelector(".search input").value = element.displayText;
+              runSearch();
+          };
+          suggestions.appendChild(li);
+      });
 
       images.forEach(element => {
         console.log(element);
@@ -89,8 +76,16 @@ function runSearch() {
         const img = document.createElement("img");
         img.src = element.thumbnailUrl;
         img.alt = element.name;
-
-        img.onclick = () => displayImgOnBoard(element.contentUrl);
+        // show img on the borad
+        img.onclick = () => {
+          const board = document.getElementById("board");
+          const div = document.createElement("div");
+          div.className = "savedImage";
+          const img = document.createElement("img");
+          img.src = element.contentUrl;
+          div.appendChild(img);
+          board.appendChild(div);
+        };
 
         div.appendChild(img);
         document.getElementById("resultsImageContainer").appendChild(div);
